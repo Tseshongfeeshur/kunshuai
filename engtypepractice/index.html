@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta property="og:title" content="英文打字练习Deepseek版">
+    <meta property="og:description" content="在线英文打字练习工具">
+    <meta property="og:type" content="website">
+    <title>英文打字练习Deepseek版</title>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-icon">⌨️</div>
+        <div class="splash-title">Typing Practice</div>
+        <div class="splash-subtitle">英文打字练习Deepseek版</div>
+        <div class="splash-credits">
+            <div class="splash-credit-item"><span>程序</span><span class="splash-credit-value">DeepSeek AI</span></div>
+            <div class="splash-credit-item"><span>项目管理员</span><span class="splash-credit-value">张卡不雅古</span></div>
+            <div class="splash-credit-item"><span>测试</span><span class="splash-credit-value">张卡不雅古 Nice2Cu
+                    Daobert</span></div>
+            <div class="splash-credit-item"><span>网页</span><span class="splash-credit-value">Ryan</span></div>
+        </div>
+        <div class="splash-loader">
+            <div class="splash-loader-bar"></div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="header-left">
+                <button class="btn-back" id="btnBackToHome">🏠 返回</button>
+                <div class="app-title">⌨️ 英文打字练习</div>
+                <span class="current-mode-indicator" id="modeIndicator"></span>
+                <span class="challenge-banner" id="challengeBanner">⚔️ 挑战</span>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-tutorial btn-sm" id="btnTutorial">📖 教程</button>
+                <button class="btn btn-sample btn-sm" id="btnSampleText">✨ 示例</button>
+                <button class="btn btn-outline btn-sm" id="btnHistory">📋 历史</button>
+                <button class="btn btn-outline btn-sm" id="btnUpload">📁 上传</button>
+                <button class="btn btn-outline btn-sm" id="btnPaste">📋 粘贴</button>
+                <button class="btn btn-ghost btn-sm" id="btnReset">🔄 重置</button>
+            </div>
+            <input type="file" id="fileInput" accept=".txt,text/plain" style="display:none;">
+        </div>
+
+        <div class="main-card">
+            <div class="original-section">
+                <div class="original-header">
+                    <div class="original-label"><span class="dot"></span> 原文参考</div>
+                    <span style="font-size:0.6rem;color:#94a3b8;" id="textInfo"></span>
+                </div>
+                <div class="original-text" id="originalText">
+                    <div style="text-align:center;padding:20px;color:#94a3b8;">
+                        <div style="font-size:2.5rem;">📝</div>
+                        <p style="margin:8px 0;font-size:0.8rem;">上传或粘贴英文文本开始</p>
+                        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+                            <button class="btn btn-primary btn-sm" id="btnEmptyUpload">📁 上传</button>
+                            <button class="btn btn-outline btn-sm" id="btnEmptyPaste">📋 粘贴</button>
+                            <button class="btn btn-sample btn-sm" id="btnEmptySample">✨ 示例</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入显示区 -->
+            <div class="input-display-section">
+                <div class="input-display-wrapper" id="inputDisplayWrapper">
+                    <div class="user-input-display" id="userInputDisplay"></div>
+                </div>
+            </div>
+
+            <!-- 虚拟输入区 -->
+            <div class="virtual-input-zone" id="virtualInputZone">
+                <div class="tap-area" id="tapArea">
+                    <span class="pulse"></span>
+                    <span id="tapText">点击此处开始打字</span>
+                </div>
+            </div>
+
+            <!-- 隐藏的可编辑元素（接收键盘输入） -->
+            <div class="hidden-editable" id="hiddenEditable" contenteditable="true" inputmode="text" autocomplete="off"
+                autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+
+            <div class="stats-bar">
+                <div class="stats-left">
+                    <span class="stat-item">⏱️ <span class="stat-value" id="statTime">00:00</span></span>
+                    <span class="stat-divider"></span>
+                    <span class="stat-item">⚡ <span class="stat-value" id="statWPM">0</span> WPM</span>
+                    <span class="stat-divider"></span>
+                    <span class="stat-item">🎯 <span class="stat-value" id="statAccuracy">100</span>%</span>
+                    <span class="stat-divider"></span>
+                    <span class="stat-item">📝 <span class="stat-value" id="statProgress">0/0</span></span>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="btnResetSmall" style="display:none;">🔄 重新开始</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal-overlay" id="tutorialModal" style="display:none;">
+        <div class="modal-dialog">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <h3>📖 功能指南</h3>
+                <button class="btn btn-ghost btn-sm" id="btnCloseTutorial">✕</button>
+            </div>
+            <div style="font-size:0.8rem;color:#475569;line-height:1.6;">
+                <p><b>📂 加载文本：</b>上传.txt文件、粘贴文本、或使用示例文本功能自动生成包含26个字母的练习文本。</p>
+                <p><b>🎯 选择模式：</b>智能小写（大小写均可）或严格匹配（必须一致）。</p>
+                <p><b>⌨️ 开始打字：</b>点击输入区域，弹出键盘后逐字输入。绿色=正确，错误会有提示但不被记录。</p>
+                <p><b>🏃 智能跳过：</b>标点、空格、换行自动跳过，只需输入字母和数字。</p>
+                <p><b>📋 历史与挑战：</b>成绩自动保存，可调用历史文本或挑战历史成绩。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="historyModal" style="display:none;">
+        <div class="modal-dialog">
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+                <h3>📋 历史记录</h3>
+                <div style="display:flex;gap:4px;">
+                    <button class="btn btn-ghost btn-sm" id="btnClearHistory" style="color:#e74c3c;">🗑️</button>
+                    <button class="btn btn-ghost btn-sm" id="btnCloseHistory">✕</button>
+                </div>
+            </div>
+            <div class="sort-tabs" id="sortTabs"
+                style="display:flex;gap:2px;background:#f1f5f9;border-radius:8px;padding:2px;margin-bottom:8px;">
+                <button class="sort-tab active" data-sort="accuracy"
+                    style="flex:1;padding:5px;border-radius:7px;font-size:0.7rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:inherit;">🎯
+                    准确率</button>
+                <button class="sort-tab" data-sort="newest"
+                    style="flex:1;padding:5px;border-radius:7px;font-size:0.7rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:inherit;">🕐
+                    最新</button>
+                <button class="sort-tab" data-sort="oldest"
+                    style="flex:1;padding:5px;border-radius:7px;font-size:0.7rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:inherit;">🕐
+                    最早</button>
+            </div>
+            <div class="history-list" id="historyList" style="max-height:50vh;overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="charCountModal" style="display:none;">
+        <div class="modal-dialog" style="text-align:center;">
+            <h3>📝 生成示例文本</h3>
+            <p class="subtitle">字符数（≥27）</p>
+            <div style="display:flex;gap:5px;justify-content:center;margin:8px 0;">
+                <button class="btn btn-outline btn-sm char-preset" data-count="50">50</button>
+                <button class="btn btn-outline btn-sm char-preset" data-count="100">100</button>
+                <button class="btn btn-outline btn-sm char-preset" data-count="200">200</button>
+                <button class="btn btn-outline btn-sm char-preset" data-count="500">500</button>
+            </div>
+            <input type="number" id="charCountInput" value="200" min="27" max="10000"
+                style="width:80px;padding:8px;border:2px solid #e2e8f0;border-radius:10px;text-align:center;font-size:1rem;font-weight:700;">
+            <p id="charHint" style="font-size:0.7rem;color:#94a3b8;margin:4px 0;">建议50-500</p>
+            <div style="display:flex;gap:6px;justify-content:center;">
+                <button class="btn btn-ghost btn-sm" id="btnCharCancel">取消</button>
+                <button class="btn btn-primary btn-sm" id="btnCharConfirm">✨ 生成</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="resultModal" style="display:none;">
+        <div class="modal-dialog" id="resultDialog"></div>
+    </div>
+    <div class="modal-overlay" id="challengeResultModal" style="display:none;">
+        <div class="modal-dialog" id="challengeResultDialog"></div>
+    </div>
+    <div class="modal-overlay" id="invalidTextModal" style="display:none;">
+        <div class="modal-dialog" style="text-align:center;">
+            <div style="font-size:3rem;">⚠️</div>
+            <h3 id="invalidTextTitle">无法练习</h3>
+            <p id="invalidTextMessage" style="color:#64748b;margin:6px 0;"></p>
+            <div style="display:flex;gap:6px;justify-content:center;"><button class="btn btn-primary btn-sm"
+                    id="btnInvalidRetry">🔄 重设</button><button class="btn btn-ghost btn-sm"
+                    id="btnCloseInvalid">关闭</button></div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modeSelectionOverlay" style="display:none;">
+        <div class="modal-dialog" style="text-align:center;">
+            <h3>🎯 选择模式</h3>
+            <p class="subtitle">文本已加载</p>
+            <div style="display:flex;flex-direction:column;gap:6px;"><button class="btn btn-outline"
+                    id="btnModeLowercase" style="justify-content:flex-start;padding:10px;border-color:#667eea;">🔤 智能小写
+                    — 大小写均可</button><button class="btn btn-outline" id="btnModeNormal"
+                    style="justify-content:flex-start;padding:10px;">📝 严格匹配 — 大小写一致</button></div><button
+                class="btn btn-ghost btn-sm" id="btnModeCancel" style="margin-top:8px;">稍后再说</button>
+        </div>
+    </div>
+    <div class="modal-overlay" id="pasteModal" style="display:none;">
+        <div class="modal-dialog">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <h3>📋 粘贴英文文本</h3><button class="btn btn-ghost btn-sm" id="btnPasteCancelTop">✕</button>
+            </div><textarea id="pasteTextarea" rows="5"
+                style="width:100%;border:2px solid #e2e8f0;border-radius:10px;padding:10px;font-family:var(--font-mono);font-size:0.85rem;resize:vertical;outline:none;"
+                placeholder="在此粘贴..."></textarea>
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px;"><button
+                    class="btn btn-ghost btn-sm" id="btnPasteCancel">取消</button><button class="btn btn-primary btn-sm"
+                    id="btnPasteConfirm">✅ 确认</button></div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="confirmBackModal" style="display:none;">
+        <div class="modal-dialog" style="text-align:center;">
+            <div style="font-size:2.5rem;">🏠</div>
+            <h3>确定返回吗？</h3>
+            <p id="confirmBackMsg" style="color:#64748b;margin:6px 0;">进度将丢失</p>
+            <div style="display:flex;gap:6px;justify-content:center;"><button class="btn btn-outline btn-sm"
+                    id="btnConfirmCancel">取消</button><button class="btn btn-primary btn-sm"
+                    id="btnConfirmBack">确定</button></div>
+        </div>
+    </div>
+    <div id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
